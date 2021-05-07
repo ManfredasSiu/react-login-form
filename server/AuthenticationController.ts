@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { createPool } = require('mysql');
+var mailCon = require('./MailController.ts');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 var utils = require('./utils');
@@ -47,6 +48,25 @@ const getAllUserData = () => pool.query(`select * from users`, (err, result, fie
   }
   return console.log(result);
 })
+
+app.get('/api/resetpwemail', (req, res) => {
+  pool.query(`select * from users where name = '${req.query.email}'`, (err, result) => {
+    if(err)
+    {
+      console.log(err);
+      return;
+    }
+    if(result.length > 0)
+    {
+      const userdata = {
+        Email: req.query.email,
+        Purpose: req.query.purpose
+      };
+      const token = utils.generateResetToken(userdata);
+      mailCon.sendResetMail(userdata.Email, token, userdata.Purpose);
+    }
+  });
+});
 
 app.post('/api/register', (req, res) => {
     console.log(req.body);
@@ -96,9 +116,75 @@ app.post('/api/register', (req, res) => {
           return res.json({ user: 0, token: 0, success: false});
         });
       }
-      else return res.json({ user: 0, token: 0, success: false});;
+      else return res.json({ user: 0, token: 0, success: false});
     });
   });
+
+  app.post('/api/updatepassword', (req, res) => {
+    console.log("test");
+    var token = req.body.token;
+    var newPass = req.body.password;
+    if (!token) {
+      return res.status(400).json({
+        error: true,
+        message: "Token is required."
+      });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, function (err, data) {
+      console.log(data, err);
+      if ((err != null) || (data.Purpose != 'reset')) return res.status(401).json({
+        error: true,
+        message: "Invalid token."
+      });
+      else{
+        console.log("test");
+        bcrypt.hash(newPass, saltRounds, function(err, hash) {
+          if(err == null){
+            console.log(hash);
+            pool.query(`UPDATE users set password='${hash}' WHERE name ='${data.Email}'`, (err, result) => {
+              if(err != null)
+              {
+                mailCon.sendMail(data.Email, "Slaptažodis nepakeistas", "Slaptažodžio pakeisti nepavyko, bandykite dar kartą.");
+                return res.json({error: true, success: false});
+              }
+              else 
+              {
+                mailCon.sendMail(data.Email, "Slaptažodis pakeistas", "Slaptažodis buvo sėkmingai pakeistas, sėkmės.");
+                return res.json({error: false, success: true});
+              }
+            })
+          }
+          else
+          {
+            mailCon.sendMail(data.Email, "Slaptažodis nepakeistas", "Slaptažodžio pakeisti nepavyko, bandykite dar kartą.");
+            return res.json({error: true, success: false});
+          }
+        });;
+      }
+    });
+  });
+
+  app.get('/api/verifyresetToken', (req, res) => {
+    var token = req.body.token || req.query.token;
+
+    if (!token) {
+      return res.status(400).json({
+        error: true,
+        message: "Token is required."
+      });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, function (err, data) {
+      if ((err != null) || (data.Purpose != "reset")) return res.status(401).json({
+        error: true,
+        message: "Invalid token."
+      });
+      else{
+         return res.json({success: true, error: false});
+      }
+    });
+  })
 
   app.get('/api/verifytoken', function (req, res) {
     var token = req.body.token || req.query.token;
@@ -111,6 +197,7 @@ app.post('/api/register', (req, res) => {
     }
 
     jwt.verify(token, process.env.JWT_SECRET, function (err, user) {
+      console.log(user);
       if (err) return res.status(401).json({
         error: true,
         message: "Invalid token."

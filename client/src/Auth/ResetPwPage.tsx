@@ -1,7 +1,8 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { register } from './APICalls';
+import { UpdatePWCall, VerifyResetToken } from './APICalls';
 import PhotoCodes from '../General/Types';
+import { withRouter } from 'react-router-dom'
 
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
@@ -11,7 +12,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import { Alert } from '@material-ui/lab';
 import Button from '@material-ui/core/Button';
 import {GridList, GridListTile} from '@material-ui/core';
-import { HostListener } from "@angular/core";
+const queryString = require('query-string');
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,7 +38,29 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const Register = (props: any) => {
+export const Reset = (props: any) => {
+
+
+  const verifyValidToken = async () => {
+
+    let queries = queryString.parse(props.location.search);
+    if(queries.email && queries.token && queries.purpose)
+    {
+        
+        var data = await VerifyResetToken(queries.token);
+        if(data == false)
+        {
+            return props.history.push('/login');
+        }
+    }
+    else{
+        return props.history.push('/login');
+    }
+        
+
+        
+  }
+  
 
   const classes = useStyles();
 
@@ -48,99 +71,74 @@ export const Register = (props: any) => {
     return window.innerHeight;
   });
 
-  const[username, setusername] = useState("");
   const[password, setpassword] = useState("");
   const[passSymbols, setPassSymbols] = useState("");
   const[confirmPassword, setconfirmPassword] = useState("");
   const[passConfirmSymbols, setPassConfirmSymbols] = useState("");
   const[helperText, sethelperText] = useState("");
-  const[picList, setpicList] = useState(new Array(20).fill(0));
   const[isButtonDisabled, setisButtonDisabled] = useState(false);
   const[isError, setisError] = useState(false);
   const[errorCode, setErrorCode] = useState("");
   const[tutorialText, setTurorialText] = useState(false);
 
-  const [refs] = useState({
-    first: React.createRef(),
-  });
-
-const registerEvent = async (name : string, password : string) => {
-    var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-    if (!pattern.test(username)) {
-      setErrorCode("Iveskite teisinga el. pasta");
-      setisError(true);
-      return;
-    }
+const resetEvent = async (password : string) => {
     if(confirmPassword != password)
     {
       setisError(true);
       setErrorCode("Slaptazodziai nesutampa.")
       return;
     }
-    const retCode = await register(name, password);
+    let queries = queryString.parse(props.location.search);
+    const retCode = await UpdatePWCall(queries.token, password);
     console.log(retCode);
-    if(retCode !== false)
+    if(retCode == true)
     {
       setisError(false);
       props.history.push('/login');
     }
     else
     { 
-      setErrorCode("Vartotojas jau egzistuoja, prisijunkite.")
+      setErrorCode("Nustatyti iš naujo nepavyko, bandykite dar kartą.")
       setisError(true);
     }
 }
 
 const onPhotoSelect = (key :string) => {
-  if(passSymbols.length > 0)
-  {
-    setpassword(password+"*"+key);
+    if(passSymbols.length > 0)
+    {
+      setpassword(password+"*"+key);
+    }
+    else setpassword(key);
+    setPassSymbols(passSymbols+".")
   }
-  else setpassword(key);
-  setPassSymbols(passSymbols+".")
-}
-
-const onPhotoConfirmSelect = (key : string) =>{
-  if(passConfirmSymbols.length > 0)
-  {
-    setconfirmPassword(confirmPassword+"*"+key);
+  
+  const onPhotoConfirmSelect = (key : string) =>{
+    if(passConfirmSymbols.length > 0)
+    {
+      setconfirmPassword(confirmPassword+"*"+key);
+    }
+    else setconfirmPassword(key);
+    setPassConfirmSymbols(passConfirmSymbols+".")
   }
-  else setconfirmPassword(key);
-  setPassConfirmSymbols(passConfirmSymbols+".")
-}
 
 
+    verifyValidToken();
     return (
     <form className={classes.container} noValidate autoComplete="off">
       <Card className={classes.card}>
-        <CardHeader className={classes.header} title="Registracija" />
+        <CardHeader className={classes.header} title="Naujas slaptažodis" />
         <CardContent >
           <div>
             {isError && <Alert severity="error">{errorCode}</Alert>}
           </div>
-          <div>
-            <TextField
-              error={isError}
-              fullWidth
-              id="username"
-              type="password"
-              label="El. Pastas"
-              placeholder="El. Pastas"
-              margin="normal"
-              onChange={(e) => {
-                setusername(e.target.value);
-              }}
-            />
-          </div>
           <div >
             <TextField 
-              disabled = {true}
               error={isError}
               fullWidth
               id="password"
-              type="email"
-              value = {password}
-              label="Slaptazodis"
+              type="password"
+              value = {passSymbols}
+              label="Naujas slaptazodis"
               placeholder="Slaptazodis"
               margin="normal"
               helperText={helperText}
@@ -148,9 +146,9 @@ const onPhotoConfirmSelect = (key : string) =>{
             <img src={process.env.PUBLIC_URL+ "questionmark.png"} width="25" height="25" onClick= {() => {setTurorialText(!tutorialText)}} />
             {tutorialText && <p style = {{outline: '5px dotted green'}}>
               <h2>Pagalba</h2>
-              Norėdami užsiregistruoti - pasirinkite norimą nuotraukų seką ir ją įsiminkite.
-              Pasirinktų nuotraukų kiekį galite matyti aukščiau esančiame langelyje. Sekančiame
-              žingsnyje reikės patvirtinti įvestą slaptažodį pasirenkant tokią pat nuotraukų seką.
+              Norėdami nustatyti slaptažodį iš naujo - pasirinkite naują norimą nuotraukų
+              seką ir ją sekančiame žingsnyje pakartokite. Atlikę nuotraukų pasirinkimus -
+               spauskite mygtuką "Nustatyti iš naujo".
             </p>}
           </div>
           <div>
@@ -176,7 +174,6 @@ const onPhotoConfirmSelect = (key : string) =>{
           </div>
           <div>
             <TextField
-              disabled = {true}
               error={isError}
               fullWidth
               id="password"
@@ -218,10 +215,10 @@ const onPhotoConfirmSelect = (key : string) =>{
             className={classes.loginBtn}
             onClick={() => {
               
-              registerEvent(username, password);
+              resetEvent(password);
             }}
             disabled={isButtonDisabled}>
-            Uzsiregistruoti
+            Nustatyti iš naujo
           </Button>
         </CardActions>
       </Card>
@@ -230,4 +227,4 @@ const onPhotoConfirmSelect = (key : string) =>{
     
   }
 
-  export default Register;
+  export default Reset;

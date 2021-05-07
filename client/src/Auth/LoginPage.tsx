@@ -1,8 +1,8 @@
 import React, { useReducer, useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import {SayHello} from './APICalls';
 import { LoginCall } from './APICalls';
-import PhotoCodes, {ShuffleCodes} from '../General/Types';
+import PhotoCodes, {ShufflePhotos} from '../General/Types';
+import { BrowserRouter, Switch, Route, NavLink } from 'react-router-dom';
 
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
@@ -11,10 +11,10 @@ import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import { Alert } from '@material-ui/lab';
 import Button from '@material-ui/core/Button';
-import { stringify } from 'node:querystring';
 import { setUserSession } from '../Utils/Common';
-import { Snackbar } from '@material-ui/core';
 import {GridList, GridListTile} from '@material-ui/core';
+import PublicRoute from '../Utils/PublicRoute';
+import forgotPage from './ForgotPwPage';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,13 +45,23 @@ export const Login = (props: any) => {
   const classes = useStyles();
 
   const[username, setusername] = useState("");
+  const[passSymbols, setPassSymbols] = useState("");
   const[password, setpassword] = useState("");
   const[helperText, sethelperText] = useState("");
-  const[picList, setpicList] = useState(new Array(20).fill(0));
   const[isButtonDisabled, setisButtonDisabled] = useState(false);
   const[isError, setisError] = useState(false);
+  const[errorCode, setErrorCode] = useState("");
+  const[tutorialText, setTurorialText] = useState(false);
+
 
 const tryLogin = async (name : string, password : string) => {
+    var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+    if (!pattern.test(username)) {
+      setErrorCode("Iveskite teisinga el. pasta");
+      setisError(true);
+      return;
+    }
+
     const retCode = await LoginCall(name, password);
     
     console.log(retCode);
@@ -61,12 +71,20 @@ const tryLogin = async (name : string, password : string) => {
       setUserSession(retCode.token, retCode.name);
       props.history.push('/dashboard');
     }
-    else setisError(true);
+    else{
+      setErrorCode("prisijungti nepavyko, vartotojas neegzistuoja arba blogi prisijungimo duomenys"); 
+      setisError(true);
+    }
 }
 
 const onPhotoSelect = (key :string) => {
-  setpassword(password+"*"+key);
-  ShuffleCodes();
+  if(passSymbols.length>0)
+  {
+    setpassword(password+"*"+key);
+  }
+  else setpassword(key);
+  setPassSymbols(passSymbols+".");
+  ShufflePhotos();
 }
 
     return (
@@ -75,7 +93,7 @@ const onPhotoSelect = (key :string) => {
         <CardHeader className={classes.header} title="Prisijungimas" />
         <CardContent>
           <div>
-            {isError && <Alert severity="error">Neteisingi prisijungimo duomenys</Alert>}
+            {isError && <Alert severity="error">{errorCode}</Alert>}
           </div>
           <div>
             <TextField
@@ -91,11 +109,12 @@ const onPhotoSelect = (key :string) => {
               }}
             />
             <TextField
+              disabled = {true}
               error={isError}
               fullWidth
               id="password"
-              type="email"
-              value = {password}
+              type="password"
+              value = {passSymbols}
               label="Slaptazodis"
               placeholder="Slaptazodis"
               margin="normal"
@@ -104,9 +123,15 @@ const onPhotoSelect = (key :string) => {
                 setpassword(e.target.value);
               }}
             />
+            <img src={process.env.PUBLIC_URL+ "questionmark.png"} width="25" height="25" onClick= {() => {setTurorialText(!tutorialText)}} />
+            {tutorialText && <p style = {{outline: '5px dotted green'}}>
+              <h2>Pagalba</h2>
+              Norėdami prisijungti - įveskite registracijos metu įvestą slaptažodį ir spauskite
+              mygtuką "Prisijungti".
+            </p>}
           </div>
           <div>
-          <GridList cellHeight={160} cols={5}>
+          <GridList cellHeight={window.innerHeight*0.15} cols={5}>
               {PhotoCodes.map((x) => (
               <GridListTile>
                 <img src={x.value} alt="photos" onClick={() => onPhotoSelect(x.key)} />
@@ -120,9 +145,10 @@ const onPhotoSelect = (key :string) => {
             className={classes.loginBtn}
             onClick={() => {
               setpassword("");
+              setPassSymbols("");
             }}
             disabled={isButtonDisabled}>
-            Isvalyti pasirinkimus
+            Isvalyti slaptazodi
           </Button>
           </div>
         </CardContent>
@@ -141,9 +167,16 @@ const onPhotoSelect = (key :string) => {
           </Button>
         </CardActions>
       </Card>
+      <div className="header">
+            <NavLink activeClassName="active" to="/forgot">Pamirsau slaptazodi</NavLink><small>(Access without token only)</small>
+          </div>
+          <div className="content">
+            <Switch>
+              <PublicRoute path="/forgot" component = {forgotPage}/>
+            </Switch>
+      </div>
     </form>
     )
-    
   }
 
   export default Login;

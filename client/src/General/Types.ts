@@ -17,7 +17,7 @@ PhotoCodes = [
     {key: "01Ll", value: process.env.PUBLIC_URL + '/PasswordTree.jpg'},
 ]
 
-export const ShuffleCodes = () => {
+export const ShufflePhotos = () => {
     var currentIndex = PhotoCodes.length, temporaryValue, randomIndex;
     while (0 !== currentIndex) {
     randomIndex = Math.floor(Math.random() * currentIndex);
