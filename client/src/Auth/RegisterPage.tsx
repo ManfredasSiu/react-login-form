@@ -123,7 +123,7 @@ const onPhotoConfirmSelect = (key : string) =>{
               error={isError}
               fullWidth
               id="username"
-              type="password"
+              type="Email"
               label="El. Pastas"
               placeholder="El. Pastas"
               margin="normal"
@@ -138,8 +138,8 @@ const onPhotoConfirmSelect = (key : string) =>{
               error={isError}
               fullWidth
               id="password"
-              type="email"
-              value = {password}
+              type="password"
+              value = {passSymbols}
               label="Slaptazodis"
               placeholder="Slaptazodis"
               margin="normal"

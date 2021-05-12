@@ -3,10 +3,13 @@
 let PhotoCodes = new Array(5);
 
 PhotoCodes = [
-    {key: "12Aa", value: process.env.PUBLIC_URL + '/Untitled.png'},
-    {key: "11Bb", value: process.env.PUBLIC_URL + '/Untitled1.png'},
-    {key: "10Cc", value: process.env.PUBLIC_URL + '/Untitled2.png'},
-    {key: "09Dd", value: process.env.PUBLIC_URL + '/Untitled3.png'},
+    {key: "15Oo", value: process.env.PUBLIC_URL + '/PasswordCastle.jpg'},
+    {key: "14Nn", value: process.env.PUBLIC_URL + '/PasswordFlower.jpg'},
+    {key: "13Mm", value: process.env.PUBLIC_URL + '/PasswordSea.jpg'},
+    {key: "12Aa", value: process.env.PUBLIC_URL + '/PasswordCandle.jpg'},
+    {key: "11Bb", value: process.env.PUBLIC_URL + '/PasswordAngel.jpg'},
+    {key: "10Cc", value: process.env.PUBLIC_URL + '/PasswordDog.jpg'},
+    {key: "09Dd", value: process.env.PUBLIC_URL + '/PasswordDuck.jpg'},
     {key: "08Ee", value: process.env.PUBLIC_URL + '/PasswordPerson.jpg'},
     {key: "07Ff", value: process.env.PUBLIC_URL + '/PasswordBerries.jpg'},
     {key: "06Gg", value: process.env.PUBLIC_URL + '/PasswordBooks.jpg'},
@@ -15,6 +18,7 @@ PhotoCodes = [
     {key: "03Jj", value: process.env.PUBLIC_URL + '/PasswordSnow.jpg'},
     {key: "02Kk", value: process.env.PUBLIC_URL + '/PasswordSunset.jpg'},
     {key: "01Ll", value: process.env.PUBLIC_URL + '/PasswordTree.jpg'},
+    
 ]
 
 export const ShufflePhotos = () => {
