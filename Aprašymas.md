@@ -13,7 +13,7 @@ Norint pasileisti tiek serverinę tiek klientinę dalis reikia:
 * Abiejų langų terminaluose įgyvendinti komandą "npm start"
 * Jei viskas gerai - klientinė dalis atsidarys numatytoje naršyklėje, o serveris konsolėje parašys "Listening to port 5000"
 
-**Verta pastebėti.** Dėl saugumo sumetimų serverio "MailController.tsx" faile nėra elektroninio pašto slaptažodžio - todėl pasileidus programą ir norint nustatyti slaptažodį iš naujo - šis funkcionalumas neveiks.
+**Verta pastebėti.** Dėl saugumo sumetimų serverio "MailController.tsx" faile nėra elektroninio pašto slaptažodžio - todėl pasileidus programą ir norint nustatyti slaptažodį iš naujo - šis funkcionalumas neveiks. Žiūrėti "SlaptažodžioNustatymasIšNaujo.mp4"
 
 **Verta pastebėti.** Programos serverinė dalis turi turėti prieigą prie MySQL duomenų bazės pavadinimu "userdb", kurioje būtų lentelė "users" su 2 string tipo stulpeliais. Duomenų bazės įkelti į github repositoriją nepavyko, todėl norint išbandyti prisijungimą ir registraciją - gali tekti ją susidiegti. 
 
