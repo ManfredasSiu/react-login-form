@@ -9,7 +9,7 @@ Norint pasileisti tiek serverinę tiek klientinę dalis reikia:
 * Parsisiųsti node-js modulį ir jį suinstaliuoti iš https://nodejs.org/en/download/
 * Parsisiųsti Visual Studio Code ir suinstaliuoti iš https://code.visualstudio.com/download
 * Norint pažiūrėti programos dizainą - duomenų bazės nereikia --Kaip įdiegti duomenų bazę žiūrėkite žemiau-- 
-* Atsidaryti server ir client aplankus skirtinguose languose
+* Atsidaryti server ir client aplankus skirtinguose Visual Studio Code languose
 * Abiejų langų terminaluose įgyvendinti komandą "npm start"
 * Jei viskas gerai - klientinė dalis atsidarys numatytoje naršyklėje, o serveris konsolėje parašys "Listening to port 5000"
 
