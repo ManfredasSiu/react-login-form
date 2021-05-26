@@ -41,7 +41,7 @@ export const Forgot = (props: any) => {
 
 
   const classes = useStyles();
-
+  
   const[username, setusername] = useState("");
   const[password, setpassword] = useState("");
   const[isButtonDisabled, setisButtonDisabled] = useState(false);
@@ -57,6 +57,8 @@ const resetPasswordEvent = async (name : string) => {
     }
 
     ResetPwCall(name, "reset");
+    setisError(true);
+    setErrorCode("Laiškas išsiųstas");
 }
 
     return (

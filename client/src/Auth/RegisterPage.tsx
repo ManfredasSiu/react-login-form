@@ -48,6 +48,8 @@ export const Register = (props: any) => {
     return window.innerHeight;
   });
 
+  const[lastPass, setLastPass] = useState("");
+  const[counter, setcounter] = useState(0);
   const[username, setusername] = useState("");
   const[password, setpassword] = useState("");
   const[passSymbols, setPassSymbols] = useState("");
@@ -65,6 +67,12 @@ export const Register = (props: any) => {
   });
 
 const registerEvent = async (name : string, password : string) => {
+    if(passSymbols.length < 3)
+    {
+      setisError(true);
+      setErrorCode("Pasirinkite nors 3 nuotraukas")
+      return;
+    }
     var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
     if (!pattern.test(username)) {
       setErrorCode("Iveskite teisinga el. pasta");
@@ -92,12 +100,43 @@ const registerEvent = async (name : string, password : string) => {
 }
 
 const onPhotoSelect = (key :string) => {
+  let count = counter;
+  if(lastPass == key)
+  {
+    count++;
+    setcounter(count);
+  }
+  else 
+  {
+    count =0;
+    setcounter(0);
+  }
+  if(count > 1)
+  {
+    setErrorCode("Negalima pasirinkti daugiau nei 2 vienodų nuotraukų iš eilės");
+    setisError(true);
+    return;
+  }
+  else if(errorCode == "Negalima pasirinkti daugiau nei 2 vienodų nuotraukų iš eilės")
+  {
+    setisError(false);
+  }
+  setLastPass(key);
   if(passSymbols.length > 0)
   {
     setpassword(password+"*"+key);
   }
   else setpassword(key);
   setPassSymbols(passSymbols+".")
+
+  
+
+  if(passSymbols.length < 3)
+  {
+    setisError(true);
+    setErrorCode("Pasirinkite nors 3 nuotraukas")
+  }
+  else if(errorCode == "Pasirinkite nors 3 nuotraukas") setisError(false)
 }
 
 const onPhotoConfirmSelect = (key : string) =>{

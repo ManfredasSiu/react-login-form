@@ -133,6 +133,7 @@ const onPhotoSelect = (key :string) => {
           </div>
           <div >
             <TextField 
+              disabled = {true}
               error={isError}
               fullWidth
               id="password"
@@ -174,6 +175,7 @@ const onPhotoSelect = (key :string) => {
           </div>
           <div>
             <TextField
+              disabled = {true}
               error={isError}
               fullWidth
               id="password"
