@@ -18,4 +18,5 @@ Siekiant parodyti sistemos funkcionalumą nepaleidžiant programos - github repo
 * Registracija.mp4 - parodantis registracijos procesą
 * Prisijungimas.mp4 - parodantis prisijungimo procesą
 * SlaptažodžioNustatymasIšNaujo.mp4 - parodo slaptažodžio nustatymo iš naujo procesą ir prisijungimą po slaptažodžio pakeitimo
+* BusenosMatomumas.mp4 - parodo būsenos matomumą registracijos metu
 * Pagalbinis.png - pagalbinio teksto nuotrauka
