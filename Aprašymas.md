@@ -17,7 +17,7 @@ Norint pasileisti tiek serverinę tiek klientinę dalis reikia:
 
 **Verta pastebėti.** Programos serverinė dalis turi turėti prieigą prie MySQL duomenų bazės pavadinimu "userdb", kurioje būtų lentelė "users" su 2 string tipo stulpeliais. Duomenų bazės įkelti į github repositoriją nepavyko, todėl norint išbandyti prisijungimą ir registraciją - gali tekti ją susidiegti. 
 
-kaip įdiegti duomenų bazę:
+Kaip įdiegti duomenų bazę (duomenų bazė kompiuteryje veiks visada, kada tik įsijungs kompiuteris, norint pašalinti - ištrinkite žemiau nurodytą duomenų bazės prisijungimą):
 * Parsisiūsti MySQL dashboard programą iš repozitorijoje įkelto "mysql-installer-web-community-8.0.23.0" failo
 * Suinstaliuoti ir atidaryti
 * Prie MySQL connections spausti + simbolį
