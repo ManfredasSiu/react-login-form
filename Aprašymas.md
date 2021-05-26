@@ -1,4 +1,4 @@
-# react-login-form
+# Įgyvendinto sprendimo diegimo aprašymas ir rekomendacijos
 
 Ši github repozitorija skirta bakalaurinio darbo klientinės ir serverinės dalių talpyklai.
 
